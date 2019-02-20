@@ -6,10 +6,13 @@ unknown_files = []
 ## End of shared variables
 
 #Extension vs Executable map
+# To support more types of scripts,
+#Simply add the extension and which shell command will execute the extension here
 extensions = {
   "py":"python",
   "pl":"perl",
   "sh":"sh",
+  "rb":"ruby",
 }
 
 def _run(executable,file):
