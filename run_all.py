@@ -4,11 +4,12 @@ import subprocess
 #All the files that can't be run will be appended to this list
 unknown_files = []
 
+#To keep track of failed and successful scripts
 failed_scripts = 0
 successful_scripts = 0
 
 #Association map
-# To support more types of scripts,
+#NOTE: To support more types of scripts,
 #Simply add the extension and which shell command will execute the extension here
 associations = {
   # "file extension":"will be run by",
@@ -19,6 +20,9 @@ associations = {
 }
 
 def _run(executable,file):
+    '''
+    Defines how to run a single script
+    '''
     global failed_scripts
     global successful_scripts
 
@@ -26,16 +30,24 @@ def _run(executable,file):
     print("----------------------")
     try:
         ret = subprocess.run([executable,file])
+
+        #If return code is 0, that means the script executed successfully.
+        #Else, the script failed. Increment the appropriate counter.
         if(ret.returncode==0):
             successful_scripts+=1
         else:
             failed_scripts+=1
+    #Sometimes scripts will have an error and won't return anything. Catch these exceptions.
+    #These scripts failed as well. So increment that counter.
     except:
         print(file, "failed to run")
         failed_scripts+=1
     print("")
 
 def run(files_list):
+    '''
+    Runs a bunch of scripts in the files_list
+    '''
     # Keep count of the number of scripts executed
     count = 0
     for file in files_list:
@@ -44,7 +56,7 @@ def run(files_list):
         if not __file__==file:
             name_and_extension_list= file.split('.')
             if(len(name_and_extension_list)!=1):
-                extension=name_and_extension_list[-1]
+                extension = name_and_extension_list[-1]
                 executable = associations.get(extension,None)
 
                 # If the extension has not associated runner, add it to the unknown files list
@@ -71,8 +83,6 @@ def main():
     print(len(unknown_files),"file(s) with unknown extension(s).")
     for file in unknown_files:
         print('>', file)
-
-
 
 if __name__=="__main__":
     main()
