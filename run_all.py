@@ -18,7 +18,11 @@ associations = {
 def _run(executable,file):
     print("Running "+file+" . . .")
     print("----------------------")
-    subprocess.run([executable,file])
+    try:
+        ret = subprocess.run([executable,file])
+        print(file,"exited with a return code",ret.returncode)
+    except:
+        print(file, "failed to run")
     print("")
 
 def run(files_list):
