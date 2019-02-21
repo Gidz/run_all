@@ -4,6 +4,9 @@ import subprocess
 #All the files that can't be run will be appended to this list
 unknown_files = []
 
+failed_scripts = 0
+successful_scripts = 0
+
 #Association map
 # To support more types of scripts,
 #Simply add the extension and which shell command will execute the extension here
@@ -16,13 +19,20 @@ associations = {
 }
 
 def _run(executable,file):
+    global failed_scripts
+    global successful_scripts
+
     print("Running "+file+" . . .")
     print("----------------------")
     try:
         ret = subprocess.run([executable,file])
-        print(file,"exited with a return code",ret.returncode)
+        if(ret.returncode==0):
+            successful_scripts+=1
+        else:
+            failed_scripts+=1
     except:
         print(file, "failed to run")
+        failed_scripts+=1
     print("")
 
 def run(files_list):
@@ -49,11 +59,20 @@ def run(files_list):
     return count
 
 def main():
-     num_executed= run(os.listdir())
-     print("\nUnable to execute",len(unknown_files),"script(s).")
-     for file in unknown_files:
-         print('>', file)
-     print("\nExecuted",num_executed,"script(s)")
+    num_executed= run(os.listdir())
+
+    print("RESULTS")
+    print("---------")
+    print("Attempted to execute",num_executed,"script(s)")
+    print(successful_scripts,"script(s) succeeded.")
+    print(failed_scripts,"script(s) failed.")
+    
+    print("")
+    print(len(unknown_files),"file(s) with unknown extension(s).")
+    for file in unknown_files:
+        print('>', file)
+
+
 
 if __name__=="__main__":
     main()
